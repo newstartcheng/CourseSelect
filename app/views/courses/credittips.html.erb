@@ -6,13 +6,13 @@
      <div class="col-sm-10">
        <div class="panel panel-primary">
          <div class="panel-heading">
-           <h3 class="panel-title">选课提示</h3>
+           <h3 class="panel-title">选课学分情况</h3>
          </div>
          <div class="panel-body" style="min-height: 170px">
          <table class="table">
          <thead>
            <tr>
-             <th>类别</th>
+             <th>说明</th>
              <th>公共必修课程及学分</th>
              <th>公共选修课程学分</th>
              <th>专业学位课学分要求</th>
@@ -29,13 +29,17 @@
              <td><br>>=12.0学分</td>
              <td><br>>=30.0学分</td>
            </tr>
+           </table>
+           <br>
+           <table class="table">
            <tr class="success">
-             <td>选课情况</td>
+             <td>已选课程</td>
              <%
              chosen_credit_public_must = 0.0
              chosen_credit_public = 0.0
              chosen_credit_major = 0.0
              chosen_credit_all = 0.0
+             
              @courses.each do |course|
                chosen_credit_all += course.credit[-3..-1].to_f
                 if course.course_type == "公共必修课"
@@ -54,8 +58,9 @@
              <td><%= chosen_credit_major %>学分</td>
              <td><%= chosen_credit_all %>学分</td>
            </tr>
+          
            <tr class="danger">
-             <td>获取学分</td>
+             <td>已获取学分</td>
              <%
              obtained_credit_pubic_must = 0.0
              obtained_credit_pubic = 0.0
@@ -84,7 +89,9 @@
            <td>注：本学期所选最低学分不少于10学分</td>
          </tbody>
          </table>
+       
        </div>
      </div>
+    </div>
    </div>
- </div>
+ </div>   
