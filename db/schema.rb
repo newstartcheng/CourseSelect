@@ -27,10 +27,11 @@ ActiveRecord::Schema.define(version: 20160909105514) do
     t.integer  "student_num",   default: 0
     t.string   "class_room"
     t.string   "course_time"
+    t.boolean  "open",          default: true
     t.string   "course_week"
     t.integer  "teacher_id"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
   end
 
   create_table "grades", force: :cascade do |t|

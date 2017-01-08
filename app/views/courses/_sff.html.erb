@@ -68,7 +68,6 @@ function queryCourse() {
 
         for(var i = 1; i<6; i++)
         {
-            
             if(document.getElementById("select_"+i).value != '')
                 tag=true;
         }
@@ -83,6 +82,7 @@ function queryCourse() {
             {
                 redict_url = redict_url+"&queryKeyword_"+i+"="+document.getElementById("select_"+i).value;
             }
+
         window.location.href = redict_url;
     }   
 }

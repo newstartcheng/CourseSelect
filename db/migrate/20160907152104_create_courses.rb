@@ -12,6 +12,7 @@ class CreateCourses < ActiveRecord::Migration
       t.integer :student_num, default: 0
       t.string :class_room
       t.string :course_time
+      t.boolean :open, default: true
       t.string :course_week
       t.belongs_to :teacher
 

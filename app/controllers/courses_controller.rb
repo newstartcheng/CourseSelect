@@ -70,8 +70,15 @@ class CoursesController < ApplicationController
      @course = @course.where("exam_type like '#{@param5}'")
     end
 
-    @course=@course-current_user.courses
-    
+     @course=@course-current_user.courses
+     @course_true = Array.new 
+     @course.each do |single| 
+       if single.open then 
+         @course_true.push single 
+       end 
+     end 
+     @course=@course_true 
+   
   end
   
   def public_list 
@@ -79,21 +86,64 @@ class CoursesController < ApplicationController
   end
   
   
-
+    
+  
+  
   def select
+    @allcourse=current_user.courses
     @course=Course.find_by_id(params[:id])
-    current_user.courses<<@course
-    flash={:success => "成功选择课程: #{@course.name}"}
-    redirect_to courses_path, flash: flash
+
+    @allcourse.each do |k|
+      if(k.course_week.nil?||@course.course_week.nil?)
+        next
+      else
+        week1 = (@course.course_week[0,1].to_i..@course.course_week[3,@course.course_week.length-1].to_i).to_a
+        week2 = (k.course_week[0,1].to_i..k.course_week[3,k.course_week.length-1].to_i).to_a
+        time1 = (@course.course_time[3].to_i..@course.course_time[5,@course.course_time.length-1].to_i).to_a
+        time2 = (k.course_time[3].to_i..k.course_time[5,k.course_time.length-1].to_i).to_a
+        weekn1=@course.course_time[2]
+        weekn2=k.course_time[2]
+      
+        if (week1 & week2)!=[] && (time1 & time2)!=[] && weekn1==weekn2
+      
+          flash={:sucess => "选课时间冲突: #{@course.name}"}
+          redirect_to list_courses_path, flash: flash
+          return
+        end
+      end
+   end
+
+    if !@course.limit_num.nil? && @course.limit_num!=0
+      if(@course.student_num < @course.limit_num)
+        current_user.courses<<@course
+        @course.student_num+=1
+        @course.update_attributes(:student_num=>@course.student_num)
+        flash={:success => "成功选择课程: #{@course.name}"}
+        redirect_to courses_path, flash: flash
+      else
+        flash={:danger => "选课人数已满: #{@course.name}"}
+        @course_open=Course.where(:open=>true)
+        @course_open=@course_open-current_user.courses
+        @course=@course_open
+        redirect_to list_courses_path, flash: flash
+      end
+    else
+       current_user.courses<<@course
+        @course.student_num+=1
+        @course.update_attributes(:student_num=>@course.student_num)
+        flash={:success => "成功选择课程: #{@course.name}"}
+        redirect_to courses_path, flash: flash
+    end     
   end
 
   def quit
     @course=Course.find_by_id(params[:id])
     current_user.courses.delete(@course)
+    @course.student_num-=1
+    @course.update_attributes(:student_num=>@course.student_num)
     flash={:success => "成功退选课程: #{@course.name}"}
     redirect_to courses_path, flash: flash
   end
-  
   def credittips
      @courses=current_user.courses
      @grades=current_user.grades
@@ -102,6 +152,18 @@ class CoursesController < ApplicationController
  def filter
     redirect_to list_courses_path(params)
  end
+ 
+  def open 
+    @course = Course.find_by_id(params[:id])
+    @course.update_attributes(:open=>true)
+    redirect_to courses_path, flash: {:success => "已经成功开放该课程:#{ @course.name}"}
+  end 
+ 
+  def close
+    @course = Course.find_by_id(params[:id])
+    @course.update_attributes(:open=>false) 
+    redirect_to courses_path, flash: {:success => "已经成功关闭该课程:#{ @course.name}"} 
+  end
   #-------------------------for both teachers and students----------------------
 
   def index
